@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: search-agent-service
+  ai:
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        model: llama3.2
+    mcp:
+      client:
+        url: http://${MCP_SERVER_HOST:localhost}:8083
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
+
+server:
+  port: 8082
+
+app:
+  cache:
+    ttl-seconds: 300
+
+logging:
+  level:
+    com.huda: DEBUG

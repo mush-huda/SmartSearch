@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: search-mcp-server
+  ai:
+    mcp:
+      server:
+        name: search-mcp-server
+        version: 1.0.0
+        stdio: false
+        type: sync
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:5432/events
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+server:
+  port: 8083
