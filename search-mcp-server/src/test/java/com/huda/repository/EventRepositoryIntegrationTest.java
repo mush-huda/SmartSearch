@@ -35,8 +35,9 @@ class EventRepositoryIntegrationTest {
     void findByFilters_byCity_returnsOnlyMatchingCity() {
         List<Event> results = eventRepository.findByFilters("Berlin", null, null, null, null);
 
-        assertThat(results).hasSize(3);
-        assertThat(results).allMatch(e -> e.getCity().equals("Berlin"));
+        assertThat(results)
+                .hasSize(3)
+                .allMatch(e -> e.getCity().equals("Berlin"));
     }
 
     @Test
@@ -52,38 +53,43 @@ class EventRepositoryIntegrationTest {
     void findByFilters_byGenre_returnsOnlyMatchingGenre() {
         List<Event> results = eventRepository.findByFilters(null, "jazz", null, null, null);
 
-        assertThat(results).hasSize(2);
-        assertThat(results).allMatch(e -> e.getGenre().equals("jazz"));
+        assertThat(results)
+                .hasSize(2)
+                .allMatch(e -> e.getGenre().equals("jazz"));
     }
 
     @Test
     void findByFilters_byArtist_returnsOnlyMatchingArtist() {
         List<Event> results = eventRepository.findByFilters(null, null, "Coldplay", null, null);
 
-        assertThat(results).hasSize(2);
-        assertThat(results).allMatch(e -> e.getArtist().equals("Coldplay"));
+        assertThat(results)
+                .hasSize(2)
+                .allMatch(e -> e.getArtist().equals("Coldplay"));
     }
 
     @Test
     void findByFilters_byArtist_isCaseInsensitive() {
         List<Event> results = eventRepository.findByFilters(null, null, "coldplay", null, null);
 
-        assertThat(results).hasSize(2);
+        assertThat(results)
+                .hasSize(2)
+                .allMatch(e -> e.getArtist().equals("Coldplay"));
     }
 
     @Test
     void findByFilters_byMaxPrice_returnsEventsAtOrBelowPrice() {
         List<Event> results = eventRepository.findByFilters(null, null, null, BigDecimal.valueOf(30), null);
 
-        assertThat(results).hasSize(3);
-        assertThat(results).allMatch(e -> e.getPriceEur().compareTo(BigDecimal.valueOf(30)) <= 0);
+        assertThat(results)
+                .hasSize(3)
+                .allMatch(e -> e.getPriceEur().compareTo(BigDecimal.valueOf(30)) <= 0);
     }
 
     @Test
     void findByFilters_byMaxPrice_includesExactMatch() {
         List<Event> results = eventRepository.findByFilters(null, null, null, BigDecimal.valueOf(25), null);
 
-        assertThat(results).hasSize(2); // 25.00 and 15.00
+        assertThat(results).hasSize(2);
     }
 
     @Test

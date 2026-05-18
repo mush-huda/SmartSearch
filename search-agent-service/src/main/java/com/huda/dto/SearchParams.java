@@ -2,10 +2,6 @@ package com.huda.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Structured parameters extracted from a natural language query by the LLM.
- * All fields are nullable — the LLM only populates what the user mentioned.
- */
 public record SearchParams(
         @JsonProperty("city") String city,
         @JsonProperty("genre") String genre,

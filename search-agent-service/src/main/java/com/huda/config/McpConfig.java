@@ -17,8 +17,9 @@ public class McpConfig {
     @Bean
     @ConditionalOnMissingBean
     public McpSyncClient mcpSyncClient() {
-        var transport = new HttpClientSseClientTransport.Builder(mcpServerUrl).build();
-        McpSyncClient mcpClient = McpClient.sync(transport).build();
+        McpSyncClient mcpClient = McpClient
+                .sync(HttpClientSseClientTransport.builder(mcpServerUrl).build())
+                .build();
         mcpClient.initialize();
         return mcpClient;
     }

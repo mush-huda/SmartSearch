@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huda.dto.EventResult;
 import com.huda.dto.SearchParams;
+import com.huda.external.AiService;
 import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -20,50 +20,30 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AgentSearchService {
 
-    private final ChatClient chatClient;
+    private final AiService aiService;
     private final McpSyncClient mcpSyncClient;
     private final CacheService cacheService;
     private final ObjectMapper objectMapper;
 
     public List<EventResult> search(String query) {
-        // 1. Ask LLM to extract structured search params from the natural language query
-        SearchParams params = extractParams(query);
-        log.debug("Extracted params: {}", params);
+        SearchParams params = aiService.extractParams(query);
+        log.info("Extracted params: {}", params);
 
-        // 2. Check cache using the structured params as key (not the raw query)
         String cacheKey = params.cacheKey();
         List<EventResult> cached = cacheService.get(cacheKey);
         if (cached != null) {
-            log.debug("Cache hit for key: {}", cacheKey);
+            log.info("Cache hit for key: {}", cacheKey);
             return cached;
         }
 
-        // 3. Cache miss — call the MCP search_events tool
-        log.debug("Cache miss for key: {}, calling MCP tool", cacheKey);
+        log.info("Cache miss for key: {}, calling MCP tool", cacheKey);
         List<EventResult> results = callSearchEventsTool(params);
 
-        // 4. Store in cache for subsequent requests with the same semantic meaning
         cacheService.set(cacheKey, results);
         return results;
     }
 
-    private SearchParams extractParams(String query) {
-        return chatClient.prompt()
-                .system("""
-                        You are a search parameter extractor for a live events platform.
-                        Extract search parameters from the user query and return ONLY a JSON object.
-                        Fields (all optional, use null if not mentioned):
-                          city: string — city name
-                          genre: string — music genre (e.g. jazz, rock, classical, electronic)
-                          artist: string — artist or band name (e.g. Coldplay, Miles Davis)
-                          maxPrice: number — maximum ticket price in EUR
-                          date: string — event date in ISO format yyyy-MM-dd
-                        Return only the raw JSON object, no markdown, no explanation.
-                        """)
-                .user(query)
-                .call()
-                .entity(SearchParams.class);
-    }
+
 
     private List<EventResult> callSearchEventsTool(SearchParams params) {
         Map<String, Object> args = new HashMap<>();
@@ -77,7 +57,7 @@ public class AgentSearchService {
                 new McpSchema.CallToolRequest("search_events", args)
         );
 
-        if (result.isError()) {
+        if (Boolean.TRUE.equals(result.isError())) {
             log.error("MCP tool call failed: {}", result.content());
             return List.of();
         }
