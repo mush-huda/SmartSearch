@@ -27,6 +27,9 @@ public class AgentSearchService {
 
     public List<EventResult> search(String query) {
         SearchParams params = aiService.extractParams(query);
+        if (params == null) {
+            throw new IllegalArgumentException("Could not extract search parameters from query: " + query);
+        }
         log.info("Extracted params: {}", params);
 
         String cacheKey = params.cacheKey();

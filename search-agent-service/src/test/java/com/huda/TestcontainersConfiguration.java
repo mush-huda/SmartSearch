@@ -10,7 +10,7 @@ import org.testcontainers.utility.DockerImageName;
 import static org.mockito.Mockito.mock;
 
 @TestConfiguration(proxyBeanMethods = false)
-class TestcontainersConfiguration {
+public class TestcontainersConfiguration {
 
     @Bean
     @ServiceConnection(name = "redis")
