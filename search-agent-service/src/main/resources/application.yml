@@ -15,7 +15,7 @@ spring:
       port: 6379
 
 server:
-  port: 8085
+  port: 8082
 
 app:
   cache:

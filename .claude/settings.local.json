@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn test *)",
+      "Read(//private/tmp/**)",
+      "Bash(jar xf *)",
+      "Bash(javap -verbose org/springframework/kafka/support/serializer/JsonSerializer.class)"
+    ]
+  }
+}

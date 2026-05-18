@@ -1,6 +1,6 @@
 package com.huda.service;
 
-import com.huda.client.SearchAgentClient;
+import com.huda.external.SearchAgentClient;
 import com.huda.dto.SearchResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

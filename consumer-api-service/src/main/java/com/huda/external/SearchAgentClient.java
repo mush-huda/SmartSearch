@@ -1,8 +1,6 @@
-package com.huda.client;
+package com.huda.external;
 
 import com.huda.dto.SearchResult;
-import com.huda.exception.SearchAgentClientException;
-import com.huda.exception.SearchAgentServerException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -11,6 +9,8 @@ import org.springframework.web.client.RestClient;
 
 import java.util.List;
 import java.util.Map;
+
+import static java.lang.String.format;
 
 @Component
 public class SearchAgentClient {
@@ -29,12 +29,26 @@ public class SearchAgentClient {
                 .body(Map.of("query", query))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, (req, res) -> {
-                    throw new SearchAgentClientException(res.getStatusCode());
+                    throw new SearchAgentClientException(
+                            format("search-agent-service failed with %s, body: %s", res.getStatusCode(), res.getBody()));
                 })
                 .onStatus(HttpStatusCode::is5xxServerError, (req, res) -> {
-                    throw new SearchAgentServerException(res.getStatusCode());
+                    throw new SearchAgentServerException(
+                            format("search-agent-service failed with %s, body: %s", res.getStatusCode(), res.getBody()));
                 })
                 .body(new ParameterizedTypeReference<>() {});
+    }
+
+    public static class SearchAgentClientException extends RuntimeException {
+        public SearchAgentClientException(String message) {
+            super(message);
+        }
+    }
+
+    public static class SearchAgentServerException extends RuntimeException {
+        public SearchAgentServerException(String message) {
+            super(message);
+        }
     }
 
 }
